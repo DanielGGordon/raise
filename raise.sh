@@ -25,10 +25,10 @@
 
 ### Assign variables ###
 store=$1
-interval=$2
+### Done assigning variables ###
 if [ -z "$3" ]
     then
-       rate="50000B"
+       rate="25000B"
     else
        rate=$3
 fi
@@ -39,15 +39,17 @@ grep2="[0-9]?[0-9]\.[0-9]"
 while true
 do
     store=$1
-    ebay_gc=$(curl -s --limit-rate 50000B https://www.raise.com/buy-$store-gift-cards | grep $grep1 | head -n 1 | grep -oP $grep2)
+    ebay_gc=$(curl -s --limit-rate $3 https://www.raise.com/buy-$store-gift-cards | grep $grep1 | head -n 1 | grep -oP $grep2)
     # The 2nd grep is Perl style, so the '?' does not need to be escaped
     # Also, double quotes are necessary for grep when adding the '?' for optional character
     # However, double quotes are not needed for the Perl Regex
     # ebay_gc=$(curl -s --limit-rate $rate https://www.raise.com/buy-$store-gift-cards?page=1 | grep [0-9]\.[0-9]%..td | head -n 1 | grep -oP [0-9]\.[0-9])
     # -s flag for 'silent' output. --limit-rate to lower the rate of transfer, as to put less load on raise.com
     # ebay_gc is a number only, like "3.2" or "5.0". Technically bash will consider it a string
+    
     now=$(echo $(date +"%m-%d @ %T")) # Get timestamp
-    echo "$ebay_gc% $now" | tee -a $1.txt
+    # echo "$ebay_gc% $now" | tee -a $1.txt
+    echo "$ebay_gc% $now (7 hours ahead)" >> $1.txt
     sleep $interval
 done
 
