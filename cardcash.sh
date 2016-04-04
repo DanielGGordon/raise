@@ -35,12 +35,16 @@ if [ -z "$3" ]
 fi
 ### Done assigning variables ###
 
-grep1="[0-9]\?[0-9]\.[0-9]%..td"
-grep2="[0-9]?[0-9]\.[0-9]"
+grep1="percent\":[0-9][0-9]\.[0-9][0-9]"
+grep2="[0-9]+\.[0-9]+"
+
+### curl -s https://www.cardcash.com/buy-gift-cards/discount-justice-cards/ | grep -oP "percent\":[0-9][0-9]\.[0-9][0-9]" | head -n 1 | grep -oP [0-9]+\.[0-9]+
+
+
 while true
 do
     store=$1
-    ebay_gc=$(curl -s --limit-rate $rate https://www.raise.com/buy-$store-gift-cards | grep $grep1 | head -n 1 | grep -oP $grep2)
+    ebay_gc=$(curl -s --limit-rate $rate https://www.cardcash.com/buy-gift-cards/discount-$store-cards/ | grep -oP $grep1 | head -n 1 | grep -oP $grep2)
     # The 2nd grep is Perl style, so the '?' does not need to be escaped
     # Also, double quotes are necessary for grep when adding the '?' for optional character
     # However, double quotes are not needed for the Perl Regex
@@ -50,7 +54,7 @@ do
     
     now=$(echo $(date +"%m-%d @ %T")) # Get timestamp
     # echo "$ebay_gc% $now" | tee -a $1.txt
-    echo "$ebay_gc% $now (7 hours ahead)" >> output_data/$1.txt
+    echo "$ebay_gc% $now (7 hours ahead)" >> output_data/cardcash/$1.txt
     sleep $interval
 done
 
